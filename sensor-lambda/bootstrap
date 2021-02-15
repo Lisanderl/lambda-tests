@@ -1,0 +1,3 @@
+#!/bin/sh
+set -euo pipefail
+./sensor-lambda -XX:MaxDirectMemorySize=64m -XX:+PrintGC -XX:+VerboseGC

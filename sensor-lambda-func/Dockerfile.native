@@ -1,0 +1,18 @@
+#FROM quay.io/quarkus/ubi-quarkus-native-image:20.2.0-java11
+FROM oracle/graalvm-ce:20.2.0-java11
+RUN gu install native-image;
+ENV LANG=en_US.UTF-8
+RUN yum install -y unzip zip
+COPY build/libs/sensor-lambda-func-0.1-all.jar /usr/src/app/sensor-lambda-func-0.1-all.jar
+USER root
+RUN chown -R root /usr/src/app
+COPY bootstrap /usr/src/app
+WORKDIR /usr/src/app
+RUN native-image --no-server -cp *.jar -H:+ReportExceptionStackTraces
+USER root
+RUN chmod 777 bootstrap
+RUN chmod 777 sensor-lambda-func
+
+RUN zip function.zip sensor-lambda-func bootstrap
+EXPOSE 8080
+ENTRYPOINT ["/usr/src/app/sensor-lambda-func"]
